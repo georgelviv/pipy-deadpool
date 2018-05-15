@@ -1,0 +1,22 @@
+{
+  "name": "pipy-deadpool",
+  "version": "0.0.1",
+  "description": "pipy-deadpool is element of pipy project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/georgelviv/pipy-deadpool.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/georgelviv/pipy-deadpool/issues"
+  },
+  "homepage": "https://github.com/georgelviv/pipy-deadpool#readme",
+  "dependencies": {
+    "websocket": "^1.0.26"
+  }
+}
