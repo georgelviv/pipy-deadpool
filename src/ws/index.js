@@ -1,11 +1,13 @@
 const WebsocketServe = require('websocket').server;
 const http = require('http');
+const WSSConnection = require('./connection');
 
 class WS {
 
   static get defaultSettings() {
     return { 
-      port: 8080
+      port: 8080,
+      onClientConnection: () => {}
     }
   }
   
@@ -17,18 +19,11 @@ class WS {
   }
 
   addConnection(req) {
-    const connection = req.accept('echo-protocol', req.origin);
+    const connection = new WSSConnection(req.accept('echo-protocol', req.origin));
     this.log(`client ${ connection.remoteAddress }: connected`);
 
-    connection.on('close', (reasonCode, description) => {
-      this.log(`client ${ connection.remoteAddress }: closed connection`);
-    });
-
-    connection.on('message', (message) => {
-      console.log(message);
-    });
-
     this.connections.push(connection);
+    this.settings.onClientConnection(connection);
   }
 
   setSettings(settings) {
