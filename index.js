@@ -1,21 +1,49 @@
 const { WSPort } = require('./configs');
 const WS = require('./src').WS;
 
-const wsServer = new WS({ port: WSPort, onClientConnection: onClientConnection });
 
-function onClientConnection(connection) {
-  connection.onMsg(message => {
-    console.log(message)
-    switch (message.type) {
-      case 'response':
-        console.log('latency:', Date.now() - (new Date(message.data.date).getTime()));
-        console.log('data: ', message.data.data);
-        break;
+class Deadpool {
+  constructor(settings) {
+    this.settings = settings;
+
+    this.setupWsServer();
+    this.connections = [];
+  }
+
+  setupWsServer() {
+    const wsSettings = Object.assign({}, this.settings.ws, { 
+      onClientConnection: this.onClientConnection.bind(this) 
+    });
+    this.wsServer = new WS(wsSettings);
+  }
+
+  sendTo(receiverName, msg) {
+    const receiver = this.connections.find(connection => connection.name === receiverName);
+
+    if (receiver) {
+      receiver.sendMsg(msg);
+    } else {
+      console.log(`I dont have ${ receiverName }`);
     }
-  });
+  }
 
-  // connection.sendMsg({
-  //   type: 'request',
-  //   data: 'get_dht_sensor_data'
-  // });
+  onClientConnection(connection) {
+    this.connections.push(connection);
+
+    connection.onMsg(message => {
+      if (message.to) {
+        message.date = new Date();
+        this.sendTo(message.to, message);
+      } else {
+        console.log('I dont know what to do with next message', message);
+      }
+    });
+  }
+  
 }
+
+new Deadpool({
+  ws: { port: WSPort }
+});
+
+

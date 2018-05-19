@@ -9,12 +9,18 @@ class WSSConnection {
 
   onMsg(cb) {
     this.connection.on('message', (msg) => {
-      cb(JSON.parse(msg.utf8Data))
+      const data = JSON.parse(msg.utf8Data);
+      switch (data.type) {
+        case 'meta':
+          this.name = data.name;
+          break;
+        default:
+          cb(data);
+      }
     })
   }
 
   sendMsg(obj) {
-    console.log('sending msg');
     this.connection.sendUTF(JSON.stringify(obj));
   }
 }
