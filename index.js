@@ -39,7 +39,7 @@ class Deadpool {
     connection.onMsg(message => {
       console.log('received message from', message.from);
       if (message.to) {
-        message.date = new Date();
+        message.brokerDate = new Date();
         this.sendTo(message.to, message);
       } else {
         console.log('I dont know what to do with next message', message);
