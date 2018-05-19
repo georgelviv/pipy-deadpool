@@ -1,9 +1,11 @@
 class WSSConnection {
   constructor(connection) {
     this.connection = connection;
-    
-    connection.on('close', (reasonCode, description) => {
-      console.log(`connection: ${ connection.remoteAddress }: closed connection`);
+  }
+
+  onClose(cb) {
+    this.connection.on('close', (reasonCode, description) => {
+      cb(this);
     });
   }
 

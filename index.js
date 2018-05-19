@@ -27,16 +27,28 @@ class Deadpool {
     }
   }
 
+  removeConnection(connectionName) {
+    this.connections = this.connections.filter(connection => {
+      return connection.name !== connectionName;
+    });
+  }
+
   onClientConnection(connection) {
     this.connections.push(connection);
 
     connection.onMsg(message => {
+      console.log('received message from', message.from);
       if (message.to) {
         message.date = new Date();
         this.sendTo(message.to, message);
       } else {
         console.log('I dont know what to do with next message', message);
       }
+    });
+
+    connection.onClose(() => {
+      console.log(`connection from ${ connection.name }: closed connection`);
+      this.removeConnection(connection.name);
     });
   }
   
