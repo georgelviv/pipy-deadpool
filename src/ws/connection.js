@@ -1,3 +1,5 @@
+const getTimeDiff = require('../helpers').getTimeDiff;
+
 class WSSConnection {
   constructor(connection) {
     this.connection = connection;
@@ -16,13 +18,18 @@ class WSSConnection {
         case 'meta':
           this.name = data.name;
           break;
-        default:
-          cb(data);
+        case 'response':
+          data.messageLatency = getTimeDiff(new Date(data.messageTime));
+          delete data.messageTime;
       }
+      cb(data);
     })
   }
 
   sendMsg(obj) {
+    if (obj.type === 'request') {
+      obj.date = new Date();
+    }
     this.connection.sendUTF(JSON.stringify(obj));
   }
 }

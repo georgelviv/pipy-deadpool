@@ -1,6 +1,6 @@
 const { WSPort } = require('./configs');
 const WS = require('./src').WS;
-const getTimeDiff = require('./src/helpers').getTimeDiff;
+
 
 class Deadpool {
   constructor(settings) {
@@ -19,6 +19,7 @@ class Deadpool {
 
   sendTo(receiverName, msg) {
     const receiver = this.connections.find(connection => connection.name === receiverName);
+
     if (receiver) {
       receiver.sendMsg(msg);
     } else {
@@ -36,18 +37,23 @@ class Deadpool {
     this.connections.push(connection);
 
     connection.onMsg(message => {
-      if (message.type === 'meta') return;
-      if (message.to) {
-        this.sendTo(message.to, message);
-      } else {
-        console.log('I dont know what to do with next message', message);
+      if (connection.name === 'batman' && !connection.isInformed) {
+        console.log('Bluetooth founded');
+        connection.isInformed = true;
+        connection.sendMsg({
+          type: 'request',
+          data: 'get_dht_sensor_data'
+        });
       }
+      console.log('received message', message);
     });
 
     connection.onClose(() => {
       console.log(`connection from ${ connection.name }: closed connection`);
       this.removeConnection(connection.name);
     });
+
+
   }
   
 }
