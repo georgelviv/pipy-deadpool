@@ -30,6 +30,7 @@ class WSSConnection {
     if (obj.type === 'request') {
       obj.date = new Date();
     }
+    console.log('sending...')
     this.connection.sendUTF(JSON.stringify(obj));
   }
 }
